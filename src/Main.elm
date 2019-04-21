@@ -16,9 +16,14 @@ import MarketDecode
         , getGroup
         , getGroupPatch
         , getRootGroups
+        , getType
         , groupsIds
+        , isHaveTypes
+        , typeDecoder
+        , typeListDecoder
         )
 import Model exposing (..)
+import Task exposing (Task)
 
 
 
@@ -35,7 +40,7 @@ init marketGroups =
             getRootGroups decoded
     in
     ( { marketGroups = decoded
-      , marketTypes = [ 0 ]
+      , marketTypes = Nothing
       , currentList = EntityListGroups rootGroups
       , navigation = Nothing
       , currentActive = Nothing
@@ -44,18 +49,37 @@ init marketGroups =
     )
 
 
-typeDecoder =
-    field "types" (Json.list Json.int)
-
-
 
 ---- UPDATE ----
+
+
+handleJsonResponse decoder response =
+    case response of
+        Http.BadUrl_ url ->
+            Err (Http.BadUrl url)
+
+        Http.Timeout_ ->
+            Err Http.Timeout
+
+        Http.BadStatus_ { statusCode } _ ->
+            Err (Http.BadStatus statusCode)
+
+        Http.NetworkError_ ->
+            Err Http.NetworkError
+
+        Http.GoodStatus_ _ body ->
+            case Json.decodeString decoder body of
+                Err _ ->
+                    Err (Http.BadBody body)
+
+                Ok result ->
+                    Ok result
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
-        { marketGroups } =
+        { marketGroups, marketTypes } =
             model
 
         getCurrentChildGroups =
@@ -92,27 +116,86 @@ update msg model =
                             , Cmd.none
                             )
 
-                GetTypes id ->
-                    ( model
-                    , Http.get
-                        { url = "https://esi.evetech.net/latest/markets/groups/" ++ String.fromInt id
-                        , expect = Http.expectJson TypesReceived typeDecoder
-                        }
-                    )
+                SelectType id ->
+                    case isHaveTypes marketTypes id of
+                        False ->
+                            ( model
+                            , Cmd.GetTypes id
+                            )
 
-                TypesReceived result ->
-                    case result of
-                        Ok resp ->
+                        True ->
+                            ( { model }
+                            , Cmd.none
+                            )
+
+                GetTypes id ->
+                    case isHaveTypes marketTypes id of
+                        False ->
+                            ( model
+                            , Task.attempt TypesReceived <| getTypes id
+                            )
+
+                        True ->
+                            ( model
+                            , Cmd.none
+                            )
+
+                TypesReceived types ->
+                    case types of
+                        Ok recived ->
                             let
                                 _ =
-                                    Debug.log "sss" result
+                                    Debug.log "recived-types" recived
                             in
-                            ( model, Cmd.none )
+                            ( { model
+                                | marketTypes = appendTypes model.marketTypes recived
+                              }
+                            , Cmd.none
+                            )
 
                         Err _ ->
                             ( model, Cmd.none )
     in
     newModel
+
+
+appendTypes types newTypes =
+    case types of
+        Just oldTypes ->
+            Just <| List.append oldTypes newTypes
+
+        Nothing ->
+            Just newTypes
+
+
+getTypesId groupId =
+    Http.task
+        { method = "GET"
+        , headers = []
+        , url = "https://esi.evetech.net/latest/markets/groups/" ++ String.fromInt groupId
+        , body = Http.emptyBody
+        , timeout = Nothing
+        , resolver = Http.stringResolver <| handleJsonResponse <| typeListDecoder
+        }
+
+
+getTypesEntity groupId =
+    Http.task
+        { method = "GET"
+        , headers = []
+        , url = "https://esi.evetech.net/latest/universe/types/" ++ String.fromInt groupId
+        , body = Http.emptyBody
+        , timeout = Nothing
+        , resolver = Http.stringResolver <| handleJsonResponse <| typeDecoder
+        }
+
+
+getTypes id =
+    getTypesId id
+        |> Task.andThen
+            (\ids ->
+                List.map getTypesEntity ids |> Task.sequence
+            )
 
 
 

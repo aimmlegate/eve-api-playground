@@ -8,16 +8,26 @@ import Html.Events exposing (onClick)
 import Model exposing (..)
 
 
-marketGroupRender { marketGroupID, marketGroupName } =
+marketGroupRender { marketGroupID, marketGroupName, hasTypes } =
+    let
+        handler =
+            case hasTypes of
+                0 ->
+                    SelectGroup <| Just marketGroupID
+
+                _ ->
+                    -- GetTypes marketGroupID
+                    SelectType marketGroupID
+    in
     ListGroup.button
-        [ ListGroup.attrs [ onClick <| SelectGroup <| Just marketGroupID ] ]
+        [ ListGroup.attrs [ onClick handler ] ]
         [ text marketGroupName ]
 
 
-marketTypeRender i =
+marketTypeRender { name } =
     ListGroup.button
         [ ListGroup.attrs [] ]
-        [ text <| String.fromInt i ]
+        [ text name ]
 
 
 currentGroupControl : Maybe Entity -> Html Msg
@@ -36,13 +46,13 @@ currentGroupControl currentActive =
                         , h1 [] [ text marketGroupName ]
                         ]
 
-                EntityType i ->
+                EntityType { name } ->
                     div []
                         [ Button.button
                             [ Button.primary
                             ]
                             [ text "Back" ]
-                        , h1 [] [ text <| String.fromInt i ]
+                        , h1 [] [ text name ]
                         ]
 
         Nothing ->
@@ -66,10 +76,10 @@ historyItemRender historyNode =
                     [ text marketGroupName ]
                 ]
 
-        EntityType i ->
+        EntityType { name } ->
             Breadcrumb.item []
                 [ a []
-                    [ text <| String.fromInt i ]
+                    [ text name ]
                 ]
 
 

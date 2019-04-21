@@ -6,6 +6,9 @@ module MarketDecode exposing
     , getGroupPatch
     , getRootGroups
     , groupsIds
+    , isHaveTypes
+    , typeDecoder
+    , typeListDecoder
     )
 
 import Dict exposing (..)
@@ -17,12 +20,25 @@ import Model exposing (..)
 decodeMarketGroup : Json.Decoder Group
 decodeMarketGroup =
     Json.map6 Group
-        (field "marketGroupID" <| Json.int)
+        (field "marketGroupID" Json.int)
         (field "parentGroupID" <| Json.maybe Json.int)
         (field "marketGroupName" Json.string)
         (field "description" Json.string)
         (field "iconID" <| Json.maybe Json.int)
         (field "hasTypes" Json.int)
+
+
+typeListDecoder =
+    field "types" (Json.list Json.int)
+
+
+typeDecoder =
+    Json.map5 Type
+        (field "description" Json.string)
+        (field "name" Json.string)
+        (field "market_group_id" Json.int)
+        (field "group_id" Json.int)
+        (field "type_id" Json.int)
 
 
 isRootGroup { parentGroupID } =
@@ -31,6 +47,15 @@ isRootGroup { parentGroupID } =
             True
 
         _ ->
+            False
+
+
+isHaveTypes marketTypes id =
+    case marketTypes of
+        Just types ->
+            List.any (\{ market_group_id } -> market_group_id == id) types
+
+        Nothing ->
             False
 
 
@@ -52,6 +77,11 @@ getRootGroups marketGroups =
 getGroup : MarketGroups -> Int -> Maybe Group
 getGroup marketGroups id =
     List.head <| List.filter (\{ marketGroupID } -> marketGroupID == id) marketGroups
+
+
+getType : MarketTypes -> Int -> Maybe Type
+getType marketTypes id =
+    List.head <| List.filter (\{ type_id } -> type_id == id) marketTypes
 
 
 getCurrentActive marketGroups id =
