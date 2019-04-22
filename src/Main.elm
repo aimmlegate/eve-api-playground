@@ -3,26 +3,15 @@ module Main exposing (init, main, update, view)
 import Bootstrap.CDN as CDN
 import Bootstrap.ListGroup as ListGroup
 import Browser
-import GroupsRender exposing (currentGroupControl, historyRender, marketGroupsRender)
+import CollectionsHandlers exposing (..)
+import DumpsDecoders exposing (decodeMarketGroups)
+import EveApi exposing (getTypes)
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
 import Http
 import Json.Decode as Json exposing (..)
-import MarketDecode
-    exposing
-        ( childGroups
-        , decodeMarketGroups
-        , getCurrentActive
-        , getGroup
-        , getGroupPatch
-        , getRootGroups
-        , getType
-        , groupsIds
-        , isHaveTypes
-        , typeDecoder
-        , typeListDecoder
-        )
 import Model exposing (..)
+import Renders exposing (currentGroupControl, historyRender, marketGroupsRender)
 import Task exposing (Task)
 
 
@@ -41,7 +30,7 @@ init marketGroups =
     in
     ( { marketGroups = decoded
       , marketTypes = Nothing
-      , currentList = EntityListGroups rootGroups
+      , currentList = Just <| EntityListGroups rootGroups
       , navigation = Nothing
       , currentActive = Nothing
       }
@@ -51,29 +40,6 @@ init marketGroups =
 
 
 ---- UPDATE ----
-
-
-handleJsonResponse decoder response =
-    case response of
-        Http.BadUrl_ url ->
-            Err (Http.BadUrl url)
-
-        Http.Timeout_ ->
-            Err Http.Timeout
-
-        Http.BadStatus_ { statusCode } _ ->
-            Err (Http.BadStatus statusCode)
-
-        Http.NetworkError_ ->
-            Err Http.NetworkError
-
-        Http.GoodStatus_ _ body ->
-            case Json.decodeString decoder body of
-                Err _ ->
-                    Err (Http.BadBody body)
-
-                Ok result ->
-                    Ok result
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -99,56 +65,23 @@ update msg model =
                 SelectGroup id ->
                     case id of
                         Just i ->
-                            ( { model
-                                | currentList = getCurrentChildGroups i
-                                , currentActive = getCurrentGroup i
-                                , navigation = getCurrentGroupPatch i
-                              }
-                            , Cmd.none
-                            )
+                            selectGroup model i
 
-                        _ ->
+                        Nothing ->
                             ( { model
-                                | currentList = EntityListGroups currentRootGroups
+                                | currentList = Just <| EntityListGroups <| currentRootGroups
                                 , currentActive = Nothing
                                 , navigation = Nothing
                               }
                             , Cmd.none
                             )
 
-                SelectType id ->
-                    case isHaveTypes marketTypes id of
-                        False ->
-                            ( model
-                            , Cmd.GetTypes id
-                            )
-
-                        True ->
-                            ( { model }
-                            , Cmd.none
-                            )
-
-                GetTypes id ->
-                    case isHaveTypes marketTypes id of
-                        False ->
-                            ( model
-                            , Task.attempt TypesReceived <| getTypes id
-                            )
-
-                        True ->
-                            ( model
-                            , Cmd.none
-                            )
-
                 TypesReceived types ->
                     case types of
                         Ok recived ->
-                            let
-                                _ =
-                                    Debug.log "recived-types" recived
-                            in
                             ( { model
                                 | marketTypes = appendTypes model.marketTypes recived
+                                , currentList = Just <| EntityListTypes recived
                               }
                             , Cmd.none
                             )
@@ -159,6 +92,45 @@ update msg model =
     newModel
 
 
+selectGroup : Model -> Int -> ( Model, Cmd Msg )
+selectGroup model id =
+    let
+        { marketGroups, marketTypes } =
+            model
+
+        selectedGroup =
+            getCurrentActive marketGroups id
+    in
+    case CollectionsHandlers.isWithTypes selectedGroup of
+        False ->
+            ( { model
+                | currentList = Just <| childGroups marketGroups id
+                , currentActive = selectedGroup
+                , navigation = getGroupPatch marketGroups id
+              }
+            , Cmd.none
+            )
+
+        True ->
+            if CollectionsHandlers.isHaveTypesInState marketTypes id then
+                ( { model
+                    | currentList = Just <| EntityListTypes <| CollectionsHandlers.getTypes (Maybe.withDefault [] marketTypes) id
+                    , currentActive = selectedGroup
+                    , navigation = getGroupPatch marketGroups id
+                  }
+                , Cmd.none
+                )
+
+            else
+                ( { model
+                    | currentList = Nothing
+                    , currentActive = selectedGroup
+                    , navigation = getGroupPatch marketGroups id
+                  }
+                , Task.attempt TypesReceived <| getTypes id
+                )
+
+
 appendTypes types newTypes =
     case types of
         Just oldTypes ->
@@ -166,36 +138,6 @@ appendTypes types newTypes =
 
         Nothing ->
             Just newTypes
-
-
-getTypesId groupId =
-    Http.task
-        { method = "GET"
-        , headers = []
-        , url = "https://esi.evetech.net/latest/markets/groups/" ++ String.fromInt groupId
-        , body = Http.emptyBody
-        , timeout = Nothing
-        , resolver = Http.stringResolver <| handleJsonResponse <| typeListDecoder
-        }
-
-
-getTypesEntity groupId =
-    Http.task
-        { method = "GET"
-        , headers = []
-        , url = "https://esi.evetech.net/latest/universe/types/" ++ String.fromInt groupId
-        , body = Http.emptyBody
-        , timeout = Nothing
-        , resolver = Http.stringResolver <| handleJsonResponse <| typeDecoder
-        }
-
-
-getTypes id =
-    getTypesId id
-        |> Task.andThen
-            (\ids ->
-                List.map getTypesEntity ids |> Task.sequence
-            )
 
 
 

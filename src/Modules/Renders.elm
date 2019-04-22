@@ -1,4 +1,4 @@
-module GroupsRender exposing (currentGroupControl, historyRender, marketGroupsRender)
+module Renders exposing (currentGroupControl, historyRender, marketGroupsRender)
 
 import Bootstrap.Breadcrumb as Breadcrumb
 import Bootstrap.Button as Button
@@ -17,7 +17,8 @@ marketGroupRender { marketGroupID, marketGroupName, hasTypes } =
 
                 _ ->
                     -- GetTypes marketGroupID
-                    SelectType marketGroupID
+                    -- SelectType marketGroupID
+                    SelectGroup <| Just marketGroupID
     in
     ListGroup.button
         [ ListGroup.attrs [ onClick handler ] ]
@@ -61,11 +62,14 @@ currentGroupControl currentActive =
 
 marketGroupsRender marketGroups =
     case marketGroups of
-        EntityListGroups groups ->
+        Just (EntityListGroups groups) ->
             ListGroup.custom <| List.map marketGroupRender groups
 
-        EntityListTypes types ->
+        Just (EntityListTypes types) ->
             ListGroup.custom <| List.map marketTypeRender types
+
+        Nothing ->
+            div [] [ text "loading" ]
 
 
 historyItemRender historyNode =

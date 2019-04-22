@@ -52,7 +52,7 @@ type alias MarketTypes =
 type alias Model =
     { marketGroups : MarketGroups
     , marketTypes : Maybe MarketTypes
-    , currentList : EntityList
+    , currentList : Maybe EntityList
     , currentActive : Maybe Entity
     , navigation : Maybe (List Entity)
     }
@@ -60,6 +60,6 @@ type alias Model =
 
 type Msg
     = SelectGroup (Maybe Int)
-    | SelectType Int
-    | GetTypes Int
+      -- | SelectType Int
+      -- | GetTypes Int
     | TypesReceived (Result Http.Error MarketTypes)

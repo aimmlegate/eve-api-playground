@@ -1,44 +1,18 @@
-module MarketDecode exposing
+module CollectionsHandlers exposing
     ( childGroups
-    , decodeMarketGroups
     , getCurrentActive
     , getGroup
     , getGroupPatch
     , getRootGroups
+    , getType
+    , getTypes
     , groupsIds
-    , isHaveTypes
-    , typeDecoder
-    , typeListDecoder
+    , isHaveTypesInState
+    , isWithTypes
+    , selectTypes
     )
 
-import Dict exposing (..)
-import Json.Decode as Json exposing (..)
-import Json.Encode
 import Model exposing (..)
-
-
-decodeMarketGroup : Json.Decoder Group
-decodeMarketGroup =
-    Json.map6 Group
-        (field "marketGroupID" Json.int)
-        (field "parentGroupID" <| Json.maybe Json.int)
-        (field "marketGroupName" Json.string)
-        (field "description" Json.string)
-        (field "iconID" <| Json.maybe Json.int)
-        (field "hasTypes" Json.int)
-
-
-typeListDecoder =
-    field "types" (Json.list Json.int)
-
-
-typeDecoder =
-    Json.map5 Type
-        (field "description" Json.string)
-        (field "name" Json.string)
-        (field "market_group_id" Json.int)
-        (field "group_id" Json.int)
-        (field "type_id" Json.int)
 
 
 isRootGroup { parentGroupID } =
@@ -50,7 +24,7 @@ isRootGroup { parentGroupID } =
             False
 
 
-isHaveTypes marketTypes id =
+isHaveTypesInState marketTypes id =
     case marketTypes of
         Just types ->
             List.any (\{ market_group_id } -> market_group_id == id) types
@@ -59,14 +33,13 @@ isHaveTypes marketTypes id =
             False
 
 
-decodeMarketGroups : Value -> MarketGroups
-decodeMarketGroups value =
-    case Json.decodeValue (Json.list decodeMarketGroup) value of
-        Ok list ->
-            list
+isWithTypes marketGroup =
+    case marketGroup of
+        Just (EntityGroup x) ->
+            x.hasTypes == 1
 
         _ ->
-            []
+            False
 
 
 getRootGroups : MarketGroups -> MarketGroups
@@ -82,6 +55,10 @@ getGroup marketGroups id =
 getType : MarketTypes -> Int -> Maybe Type
 getType marketTypes id =
     List.head <| List.filter (\{ type_id } -> type_id == id) marketTypes
+
+
+getTypes marketTypes id =
+    List.filter (\{ group_id } -> group_id == id) marketTypes
 
 
 getCurrentActive marketGroups id =
@@ -110,6 +87,13 @@ childGroups marketGroups parentId =
                         False
             )
             marketGroups
+
+
+selectTypes : MarketTypes -> Int -> MarketTypes
+selectTypes marketTypes marketGroupID =
+    List.filter
+        (\{ market_group_id } -> market_group_id == marketGroupID)
+        marketTypes
 
 
 groupsIds marketGroups =
