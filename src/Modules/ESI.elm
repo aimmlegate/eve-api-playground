@@ -1,22 +1,10 @@
-module EveApi exposing (getTypes)
+module ESI exposing (getTypes)
 
+import Decoders exposing (..)
 import Http
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
 import Task exposing (Task)
-
-
-typeListDecoder =
-    field "types" (Json.list Json.int)
-
-
-typeDecoder =
-    Json.map5 Type
-        (field "description" Json.string)
-        (field "name" Json.string)
-        (field "market_group_id" Json.int)
-        (field "group_id" Json.int)
-        (field "type_id" Json.int)
 
 
 handleJsonResponse decoder response =
@@ -49,7 +37,7 @@ getTypesId groupId =
         , url = "https://esi.evetech.net/latest/markets/groups/" ++ String.fromInt groupId
         , body = Http.emptyBody
         , timeout = Nothing
-        , resolver = Http.stringResolver <| handleJsonResponse <| typeListDecoder
+        , resolver = Http.stringResolver <| handleJsonResponse <| Decoders.typeListDecoder
         }
 
 
@@ -60,7 +48,7 @@ getTypesEntity groupId =
         , url = "https://esi.evetech.net/latest/universe/types/" ++ String.fromInt groupId
         , body = Http.emptyBody
         , timeout = Nothing
-        , resolver = Http.stringResolver <| handleJsonResponse <| typeDecoder
+        , resolver = Http.stringResolver <| handleJsonResponse <| Decoders.typeDecoder
         }
 
 

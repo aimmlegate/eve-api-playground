@@ -1,4 +1,9 @@
-module DumpsDecoders exposing (decodeMarketGroups)
+module Decoders exposing
+    ( decodeMarketGroup
+    , decodeMarketGroups
+    , typeDecoder
+    , typeListDecoder
+    )
 
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
@@ -13,6 +18,19 @@ decodeMarketGroup =
         (field "description" Json.string)
         (field "iconID" <| Json.maybe Json.int)
         (field "hasTypes" Json.int)
+
+
+typeListDecoder =
+    field "types" (Json.list Json.int)
+
+
+typeDecoder =
+    Json.map5 Type
+        (field "description" Json.string)
+        (field "name" Json.string)
+        (field "market_group_id" Json.int)
+        (field "group_id" Json.int)
+        (field "type_id" Json.int)
 
 
 decodeMarketGroups : Value -> MarketGroups
