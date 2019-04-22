@@ -1,7 +1,11 @@
 module State exposing
-    ( buildNavigationList
+    ( appendTypes
+    , buildNavigationList
+    , getRootGroups
+    , isTerminalGroup
     , selectGroup
     , selectGroupsList
+    , selectRoot
     , selectType
     , selectTypesList
     )
@@ -89,6 +93,35 @@ selectRoot { marketGroups } =
     Just <| EntityListGroups <| getRootGroups marketGroups
 
 
+isTerminalGroup : Model -> Maybe Int -> Bool
+isTerminalGroup { marketGroups } id =
+    case id of
+        Nothing ->
+            False
+
+        Just i ->
+            let
+                selected =
+                    getGroup marketGroups i
+            in
+            case selected of
+                Just v ->
+                    v.hasTypes == 1
+
+                Nothing ->
+                    False
+
+
+appendTypes : Maybe MarketTypes -> MarketTypes -> Maybe MarketTypes
+appendTypes types newTypes =
+    case types of
+        Just oldTypes ->
+            Just <| List.append oldTypes newTypes
+
+        Nothing ->
+            Just newTypes
+
+
 
 ---- INTERNAL ----
 
@@ -110,16 +143,6 @@ isHaveTypesInState marketTypes id =
             List.any (\{ market_group_id } -> market_group_id == id) types
 
         Nothing ->
-            False
-
-
-isWithTypes : Maybe Entity -> Bool
-isWithTypes marketGroup =
-    case marketGroup of
-        Just (EntityGroup x) ->
-            x.hasTypes == 1
-
-        _ ->
             False
 
 
