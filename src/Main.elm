@@ -1,7 +1,10 @@
 module Main exposing (init, main, update, view)
 
 import Bootstrap.CDN as CDN
+import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Col as Col
 import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Navbar as Navbar
 import Browser
 import Decoders exposing (..)
 import Html exposing (Html, div, h1, img, text)
@@ -9,7 +12,7 @@ import Html.Attributes exposing (src)
 import Http
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
-import Renders exposing (currentGroupControl, historyRender, marketGroupsRender)
+import Renders exposing (currentGroupControl, experimentalRender, historyRender, marketGroupsRender)
 import State exposing (..)
 import Update exposing (..)
 
@@ -63,14 +66,25 @@ view model =
     in
     div []
         [ CDN.stylesheet
-        , historyRender navigation
-        , currentGroupControl currentActive
-        , marketGroupsRender currentList
+        , Grid.containerFluid []
+            [ Grid.row
+                []
+                [ Grid.col
+                    [ Col.xs12 ]
+                    [ historyRender navigation ]
+                ]
+            , Grid.simpleRow
+                [ Grid.col
+                    [ Col.lg2 ]
+                    [ currentGroupControl currentActive
+                    , experimentalRender model
+                    ]
+                , Grid.col
+                    [ Col.lg10 ]
+                    [ text "col2-row2" ]
+                ]
+            ]
         ]
-
-
-
----- PROGRAM ----
 
 
 main : Program Value Model Msg

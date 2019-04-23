@@ -1,8 +1,10 @@
 module State exposing
     ( appendTypes
     , buildNavigationList
+    , getEntityMarketId
     , getRootGroups
     , isTerminalGroup
+    , selectEntityChild
     , selectGroup
     , selectGroupsList
     , selectRoot
@@ -15,6 +17,36 @@ import Model exposing (..)
 
 
 ---- EXPOSING ----
+-- selectEntityChild : Model -> Maybe EntityList
+
+
+selectEntityChild model entity =
+    let
+        { currentActive, marketGroups } =
+            model
+    in
+    case entity of
+        EntityGroup { marketGroupID } ->
+            Just <|
+                EntityListGroups <|
+                    List.filter
+                        (\group ->
+                            marketGroupID == Maybe.withDefault -1 group.parentGroupID
+                        )
+                        marketGroups
+
+        _ ->
+            Nothing
+
+
+getEntityMarketId : Entity -> Int
+getEntityMarketId entity =
+    case entity of
+        EntityGroup { marketGroupID } ->
+            marketGroupID
+
+        EntityType { market_group_id } ->
+            market_group_id
 
 
 selectGroupsList : Model -> Int -> Maybe EntityList
