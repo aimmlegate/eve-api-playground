@@ -67,21 +67,14 @@ view model =
     div []
         [ CDN.stylesheet
         , Grid.containerFluid []
-            [ Grid.row
-                []
-                [ Grid.col
-                    [ Col.xs12 ]
-                    [ historyRender navigation ]
-                ]
-            , Grid.simpleRow
+            [ Grid.simpleRow
                 [ Grid.col
                     [ Col.lg2 ]
-                    [ currentGroupControl currentActive
-                    , marketTreeRender model
+                    [ marketTreeRender model
                     ]
                 , Grid.col
                     [ Col.lg10 ]
-                    [ text "col2-row2" ]
+                    [ historyRender navigation ]
                 ]
             ]
         ]

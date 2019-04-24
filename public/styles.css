@@ -1,0 +1,24 @@
+.market-ul {
+  list-style: none;
+  padding: 0;
+  padding-left: 15px;
+}
+
+.market-li {
+  cursor: pointer;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.market-li:hover {
+  opacity: 0.8;
+}
+
+.market-li-types {
+  list-style-type: circle;
+}
+
+.market-list-cont {
+  overflow-y: scroll;
+  height: 100vh;
+}

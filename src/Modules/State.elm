@@ -4,6 +4,7 @@ module State exposing
     , getEntityMarketId
     , getEntityMarketParentId
     , getRootGroups
+    , isRootGroup
     , isTerminalGroup
     , selectEntityChild
     , selectGroup
@@ -173,10 +174,6 @@ appendTypes types newTypes =
             Just newTypes
 
 
-
----- INTERNAL ----
-
-
 isRootGroup : Group -> Bool
 isRootGroup { parentGroupID } =
     case parentGroupID of
@@ -185,6 +182,10 @@ isRootGroup { parentGroupID } =
 
         _ ->
             False
+
+
+
+---- INTERNAL ----
 
 
 isHaveTypesInState : Maybe MarketTypes -> Int -> Bool

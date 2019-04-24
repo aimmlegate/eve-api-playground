@@ -3,34 +3,38 @@ module Renders exposing (currentGroupControl, historyRender, marketGroupsRender,
 import Bootstrap.Breadcrumb as Breadcrumb
 import Bootstrap.Button as Button
 import Bootstrap.ListGroup as ListGroup
-import Html exposing (Html, a, div, h1, img, li, p, text, ul)
+import Html exposing (Html, a, div, h1, img, li, p, span, text, ul)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Model exposing (..)
-import State exposing (getEntityMarketId, getRootGroups, isTerminalGroup, selectEntityChild, selectRoot)
+import State exposing (getEntityMarketId, getRootGroups, isRootGroup, isTerminalGroup, selectEntityChild, selectRoot)
 
 
-marketGroupRender { marketGroupID, marketGroupName, hasTypes } =
+marketGroupRender group =
     let
-        handler =
-            case hasTypes of
-                0 ->
-                    SelectGroup <| Just marketGroupID
-
-                _ ->
-                    SelectGroup <| Just marketGroupID
+        { marketGroupID, marketGroupName, hasTypes } =
+            group
     in
-    li []
-        [ p
-            [ class "font-weight-bold", onClick handler ]
-            [ text marketGroupName ]
-        ]
+    case isRootGroup group of
+        True ->
+            li []
+                [ span
+                    [ class "font-weight-bold market-li text-uppercase text-muted", onClick <| SelectGroup <| Just marketGroupID ]
+                    [ text marketGroupName ]
+                ]
+
+        False ->
+            li []
+                [ span
+                    [ class "font-weight-normal market-li ", onClick <| SelectGroup <| Just marketGroupID ]
+                    [ text marketGroupName ]
+                ]
 
 
 marketTypeRender { name } =
-    li []
-        [ p
-            []
+    li [ class "market-li-types" ]
+        [ span
+            [ class "font-weight-normal market-li text-muted" ]
             [ text name ]
         ]
 
@@ -99,14 +103,16 @@ historyItemRenderRoot =
 
 
 historyRender history =
-    case history of
-        Just hist ->
-            Breadcrumb.container <|
-                List.append [ historyItemRenderRoot ] <|
-                    List.map historyItemRender hist
+    div [ class "mt-3" ]
+        [ case history of
+            Just hist ->
+                Breadcrumb.container <|
+                    List.append [ historyItemRenderRoot ] <|
+                        List.map historyItemRender hist
 
-        Nothing ->
-            Breadcrumb.container [ historyItemRenderRoot ]
+            Nothing ->
+                Breadcrumb.container [ historyItemRenderRoot ]
+        ]
 
 
 marketTreeRender : Model -> Html Msg
@@ -131,7 +137,7 @@ marketTreeRender model =
                 ( Nothing, _, True ) ->
                     case currentList of
                         Just (EntityListTypes types) ->
-                            ul [] <|
+                            ul [ class "market-ul" ] <|
                                 List.map marketTypeRender
                                     types
 
@@ -142,7 +148,7 @@ marketTreeRender model =
                             div [] [ text "error" ]
 
                 ( Just (EntityListGroups groups), Just (h :: hs), _ ) ->
-                    ul [] <|
+                    ul [ class "market-ul" ] <|
                         List.map
                             (\group ->
                                 case group.marketGroupID == getEntityMarketId h of
@@ -160,13 +166,14 @@ marketTreeRender model =
                             groups
 
                 ( Just (EntityListGroups groups), Just [], _ ) ->
-                    ul [] <|
+                    ul [ class "market-ul" ] <|
                         List.map marketGroupRender
                             groups
 
                 _ ->
-                    ul [] <|
+                    ul [ class "market-ul" ] <|
                         List.map marketGroupRender <|
                             getRootGroups marketGroups
     in
-    submenuRender rootGroups navigation
+    div [ class "vh-100 market-list-cont pt-3" ]
+        [ submenuRender rootGroups navigation ]
