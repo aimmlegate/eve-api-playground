@@ -69,11 +69,11 @@ view model =
         , Grid.containerFluid []
             [ Grid.simpleRow
                 [ Grid.col
-                    [ Col.lg2 ]
+                    [ Col.xl2, Col.lg3, Col.md4 ]
                     [ marketTreeRender model
                     ]
                 , Grid.col
-                    [ Col.lg10 ]
+                    [ Col.xl10, Col.lg9, Col.md8 ]
                     [ historyRender navigation ]
                 ]
             ]
