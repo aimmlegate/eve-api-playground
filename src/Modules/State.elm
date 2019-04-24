@@ -2,6 +2,7 @@ module State exposing
     ( appendTypes
     , buildNavigationList
     , getEntityMarketId
+    , getEntityMarketParentId
     , getRootGroups
     , isTerminalGroup
     , selectEntityChild
@@ -47,6 +48,19 @@ getEntityMarketId entity =
 
         EntityType { market_group_id } ->
             market_group_id
+
+
+getEntityMarketParentId : Maybe Entity -> Maybe Int
+getEntityMarketParentId entity =
+    case entity of
+        Just (EntityGroup { parentGroupID }) ->
+            parentGroupID
+
+        Just (EntityType { market_group_id }) ->
+            Just market_group_id
+
+        _ ->
+            Nothing
 
 
 selectGroupsList : Model -> Int -> Maybe EntityList

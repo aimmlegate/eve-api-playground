@@ -120,12 +120,6 @@ experimentalRender model =
 
         submenuRender entityList nav =
             case ( entityList, nav ) of
-                ( Just (EntityListTypes types), Just [] ) ->
-                    ul [] <|
-                        List.map
-                            marketTypeRender
-                            types
-
                 ( Just (EntityListGroups groups), Just (h :: hs) ) ->
                     ul [] <|
                         List.map
@@ -148,16 +142,6 @@ experimentalRender model =
                     ul [] <|
                         List.map marketGroupRender
                             groups
-
-                ( _, Just ((EntityGroup h) :: _) ) ->
-                    if isTerminalGroup model (Just h.marketGroupID) then
-                        submenuRender currentList nav
-
-                    else
-                        div [] [ text "loading" ]
-
-                ( Nothing, _ ) ->
-                    div [] [ text "loading" ]
 
                 _ ->
                     ul [] <|

@@ -6,10 +6,19 @@ import State exposing (..)
 import Task exposing (Task)
 
 
+isSameCurrent { currentActive } i =
+    case ( currentActive, i ) of
+        ( Just entity, Just id ) ->
+            getEntityMarketId entity == id
+
+        _ ->
+            False
+
+
 selectGroup : Model -> Maybe Int -> ( Model, Cmd Msg )
 selectGroup model id =
-    case ( id, isTerminalGroup model id ) of
-        ( Nothing, _ ) ->
+    case ( id, isTerminalGroup model id, isSameCurrent model id ) of
+        ( Nothing, _, _ ) ->
             ( { model
                 | currentList = State.selectRoot model
                 , currentActive = Nothing
@@ -18,7 +27,25 @@ selectGroup model id =
             , Cmd.none
             )
 
-        ( Just i, False ) ->
+        ( _, _, True ) ->
+            let
+                parentId =
+                    getEntityMarketParentId model.currentActive
+            in
+            case parentId of
+                Just i ->
+                    ( { model
+                        | currentList = State.selectGroupsList model i
+                        , currentActive = State.selectGroup model i
+                        , navigation = State.buildNavigationList model i
+                      }
+                    , Cmd.none
+                    )
+
+                Nothing ->
+                    selectGroup model Nothing
+
+        ( Just i, False, _ ) ->
             ( { model
                 | currentList = State.selectGroupsList model i
                 , currentActive = State.selectGroup model i
@@ -27,7 +54,7 @@ selectGroup model id =
             , Cmd.none
             )
 
-        ( Just i, True ) ->
+        ( Just i, True, _ ) ->
             let
                 selectedTypes =
                     State.selectTypesList model i
