@@ -1,4 +1,4 @@
-module Renders exposing (currentGroupControl, experimentalRender, historyRender, marketGroupsRender)
+module Renders exposing (currentGroupControl, historyRender, marketGroupsRender, marketTreeRender)
 
 import Bootstrap.Breadcrumb as Breadcrumb
 import Bootstrap.Button as Button
@@ -109,18 +109,39 @@ historyRender history =
             Breadcrumb.container [ historyItemRenderRoot ]
 
 
-experimentalRender : Model -> Html Msg
-experimentalRender model =
+marketTreeRender : Model -> Html Msg
+marketTreeRender model =
     let
-        { marketGroups, marketTypes, currentList, navigation } =
+        { marketGroups, marketTypes, currentList, navigation, currentActive } =
             model
 
         rootGroups =
             selectRoot model
 
+        isCurrentHeveTypes =
+            case currentActive of
+                Just (EntityGroup { hasTypes }) ->
+                    1 == hasTypes
+
+                _ ->
+                    False
+
         submenuRender entityList nav =
-            case ( entityList, nav ) of
-                ( Just (EntityListGroups groups), Just (h :: hs) ) ->
+            case ( entityList, nav, isCurrentHeveTypes ) of
+                ( Nothing, _, True ) ->
+                    case currentList of
+                        Just (EntityListTypes types) ->
+                            ul [] <|
+                                List.map marketTypeRender
+                                    types
+
+                        Nothing ->
+                            div [] [ text "loading" ]
+
+                        _ ->
+                            div [] [ text "error" ]
+
+                ( Just (EntityListGroups groups), Just (h :: hs), _ ) ->
                     ul [] <|
                         List.map
                             (\group ->
@@ -138,7 +159,7 @@ experimentalRender model =
                             )
                             groups
 
-                ( Just (EntityListGroups groups), Just [] ) ->
+                ( Just (EntityListGroups groups), Just [], _ ) ->
                     ul [] <|
                         List.map marketGroupRender
                             groups

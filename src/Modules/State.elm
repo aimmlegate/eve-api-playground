@@ -27,14 +27,19 @@ selectEntityChild model entity =
             model
     in
     case entity of
-        EntityGroup { marketGroupID } ->
-            Just <|
-                EntityListGroups <|
-                    List.filter
-                        (\group ->
-                            marketGroupID == Maybe.withDefault -1 group.parentGroupID
-                        )
-                        marketGroups
+        EntityGroup { marketGroupID, hasTypes } ->
+            case hasTypes of
+                1 ->
+                    selectTypesList model marketGroupID
+
+                _ ->
+                    Just <|
+                        EntityListGroups <|
+                            List.filter
+                                (\group ->
+                                    marketGroupID == Maybe.withDefault -1 group.parentGroupID
+                                )
+                                marketGroups
 
         _ ->
             Nothing

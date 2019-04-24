@@ -79,6 +79,15 @@ selectGroup model id =
                     )
 
 
+getListTypesId types =
+    case types of
+        t :: _ ->
+            Just t.market_group_id
+
+        _ ->
+            Nothing
+
+
 typesReceived model types =
     case types of
         Ok recived ->

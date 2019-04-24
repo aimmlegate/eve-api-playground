@@ -12,7 +12,7 @@ import Html.Attributes exposing (src)
 import Http
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
-import Renders exposing (currentGroupControl, experimentalRender, historyRender, marketGroupsRender)
+import Renders exposing (currentGroupControl, historyRender, marketGroupsRender, marketTreeRender)
 import State exposing (..)
 import Update exposing (..)
 
@@ -77,7 +77,7 @@ view model =
                 [ Grid.col
                     [ Col.lg2 ]
                     [ currentGroupControl currentActive
-                    , experimentalRender model
+                    , marketTreeRender model
                     ]
                 , Grid.col
                     [ Col.lg10 ]
