@@ -116,7 +116,7 @@ selectTypesList { marketTypes } id =
                     Just <| EntityListTypes v
 
 
-selectType : Model -> Int -> Maybe Entity
+selectType : Model -> Int -> Maybe Type
 selectType { marketTypes } id =
     case marketTypes of
         Nothing ->
@@ -129,7 +129,7 @@ selectType { marketTypes } id =
             in
             case selected of
                 Just v ->
-                    Just <| EntityType v
+                    Just <| v
 
                 Nothing ->
                     Nothing

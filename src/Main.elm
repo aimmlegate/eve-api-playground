@@ -7,12 +7,12 @@ import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Navbar as Navbar
 import Browser
 import Decoders exposing (..)
+import GroupsRenders exposing (historyRender, marketTreeRender)
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
 import Http
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
-import Renders exposing (historyRender, marketGroupsRender, marketTreeRender)
 import State exposing (..)
 import Update exposing (..)
 
@@ -53,6 +53,9 @@ update msg model =
 
         TypesReceived types ->
             Update.typesReceived model types
+
+        SelectType id ->
+            Update.selectType model id
 
 
 

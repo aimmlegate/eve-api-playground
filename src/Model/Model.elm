@@ -62,3 +62,4 @@ type alias Model =
 type Msg
     = SelectGroup (Maybe Int)
     | TypesReceived (Result Http.Error MarketTypes)
+    | SelectType Int

@@ -1,4 +1,4 @@
-module Update exposing (selectGroup, typesReceived)
+module Update exposing (selectGroup, selectType, typesReceived)
 
 import ESI exposing (..)
 import Http
@@ -90,3 +90,12 @@ typesReceived model types =
 
         Err _ ->
             ( model, Cmd.none )
+
+
+selectType : Model -> Int -> ( Model, Cmd Msg )
+selectType model id =
+    ( { model
+        | selectedType = State.selectType model id
+      }
+    , Cmd.none
+    )

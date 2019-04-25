@@ -1,4 +1,4 @@
-module Renders exposing (historyRender, marketGroupsRender, marketTreeRender)
+module GroupsRenders exposing (historyRender, marketTreeRender)
 
 import Bootstrap.Breadcrumb as Breadcrumb
 import Bootstrap.Button as Button
@@ -31,52 +31,28 @@ marketGroupRender group =
                 ]
 
 
-marketTypeRender { name, type_id } =
+marketTypeRender selectedType { name, type_id } =
+    let
+        isActive =
+            case selectedType of
+                Nothing ->
+                    False
+
+                Just t ->
+                    t.type_id == type_id
+
+        classnames =
+            if isActive then
+                "font-weight-normal market-li text-primary"
+
+            else
+                "font-weight-normal market-li text-muted"
+    in
     li [ class "market-li-types" ]
         [ span
-            [ class "font-weight-normal market-li text-muted" ]
+            [ class classnames, onClick <| SelectType type_id ]
             [ text name ]
         ]
-
-
-
--- currentGroupControl : Maybe Entity -> Html Msg
--- currentGroupControl currentActive =
---     case currentActive of
---         Just entity ->
---             case entity of
---                 EntityGroup { marketGroupName, parentGroupID } ->
---                     div []
---                         [ Button.button
---                             [ Button.primary
---                             , Button.attrs
---                                 [ onClick <| SelectGroup parentGroupID ]
---                             ]
---                             [ text "Back" ]
---                         , h1 [] [ text marketGroupName ]
---                         ]
---                 EntityType { name } ->
---                     div []
---                         [ Button.button
---                             [ Button.primary
---                             ]
---                             [ text "Back" ]
---                         , h1 [] [ text name ]
---                         ]
---         Nothing ->
---             h1 [] [ text "Root" ]
-
-
-marketGroupsRender marketGroups =
-    case marketGroups of
-        Just (EntityListGroups groups) ->
-            ul [] <| List.map marketGroupRender groups
-
-        Just (EntityListTypes types) ->
-            ul [] <| List.map marketTypeRender types
-
-        Nothing ->
-            div [] [ text "loading" ]
 
 
 historyItemRender historyNode =
@@ -87,9 +63,9 @@ historyItemRender historyNode =
                     [ text marketGroupName ]
                 ]
 
-        EntityType { name } ->
+        EntityType { name, type_id } ->
             Breadcrumb.item []
-                [ a []
+                [ a [ onClick <| SelectType type_id ]
                     [ text name ]
                 ]
 
@@ -117,7 +93,7 @@ historyRender history =
 marketTreeRender : Model -> Html Msg
 marketTreeRender model =
     let
-        { marketGroups, marketTypes, currentList, navigation, currentActive } =
+        { marketGroups, marketTypes, currentList, navigation, currentActive, selectedType } =
             model
 
         rootGroups =
@@ -137,7 +113,7 @@ marketTreeRender model =
                     case currentList of
                         Just (EntityListTypes types) ->
                             ul [ class "market-ul" ] <|
-                                List.map marketTypeRender
+                                List.map (marketTypeRender selectedType)
                                     types
 
                         Nothing ->
