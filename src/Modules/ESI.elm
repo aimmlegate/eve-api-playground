@@ -30,11 +30,15 @@ handleJsonResponse decoder response =
                     Ok result
 
 
+query =
+    "?datasource=tranquility&language=en-us"
+
+
 getTypesId groupId =
     Http.task
         { method = "GET"
         , headers = []
-        , url = "https://esi.evetech.net/latest/markets/groups/" ++ String.fromInt groupId
+        , url = "https://esi.evetech.net/latest/markets/groups/" ++ String.fromInt groupId ++ query
         , body = Http.emptyBody
         , timeout = Nothing
         , resolver = Http.stringResolver <| handleJsonResponse <| Decoders.typeListDecoder
@@ -45,7 +49,7 @@ getTypesEntity groupId =
     Http.task
         { method = "GET"
         , headers = []
-        , url = "https://esi.evetech.net/latest/universe/types/" ++ String.fromInt groupId
+        , url = "https://esi.evetech.net/latest/universe/types/" ++ String.fromInt groupId ++ query
         , body = Http.emptyBody
         , timeout = Nothing
         , resolver = Http.stringResolver <| handleJsonResponse <| Decoders.typeDecoder

@@ -19,7 +19,9 @@ marketGroupRender group =
         True ->
             li []
                 [ span
-                    [ class "font-weight-bold market-li text-uppercase text-muted", onClick <| SelectGroup <| Just marketGroupID ]
+                    [ class "font-weight-bold market-li text-uppercase text-muted"
+                    , onClick <| SelectGroup <| Just marketGroupID
+                    ]
                     [ text marketGroupName ]
                 ]
 
