@@ -14864,14 +14864,6 @@
     "hasTypes": 1
   },
   {
-    "marketGroupID": 350001,
-    "parentGroupID": "None",
-    "marketGroupName": "Infantry Gear",
-    "description": "Specialist equipment for Infantry",
-    "iconID": 10847,
-    "hasTypes": 0
-  },
-  {
     "marketGroupID": 353557,
     "parentGroupID": 353567,
     "marketGroupName": "Grenades",
