@@ -57,12 +57,12 @@ selectGroup model id =
         ( Just i, True, _ ) ->
             let
                 selectedTypes =
-                    State.selectTypesList model i
+                    State.selectTypesListCurrent model i
             in
             case selectedTypes of
                 Just types ->
                     ( { model
-                        | currentList = State.selectTypesList model i
+                        | currentList = selectedTypes
                         , currentActive = State.selectGroup model i
                         , navigation = State.buildNavigationList model i
                       }
@@ -79,13 +79,13 @@ selectGroup model id =
                     )
 
 
-getListTypesId types =
-    case types of
-        t :: _ ->
-            Just t.market_group_id
 
-        _ ->
-            Nothing
+-- getListTypesId types =
+--     case types of
+--         t :: _ ->
+--             Just t.market_group_id
+--         _ ->
+--             Nothing
 
 
 typesReceived model types =

@@ -124,7 +124,7 @@ marketTreeRender model =
         rootGroups =
             selectRoot model
 
-        isCurrentHeveTypes =
+        isCurrentHaveTypes =
             case currentActive of
                 Just (EntityGroup { hasTypes }) ->
                     1 == hasTypes
@@ -133,7 +133,7 @@ marketTreeRender model =
                     False
 
         submenuRender entityList nav =
-            case ( entityList, nav, isCurrentHeveTypes ) of
+            case ( entityList, nav, isCurrentHaveTypes ) of
                 ( Nothing, _, True ) ->
                     case currentList of
                         Just (EntityListTypes types) ->

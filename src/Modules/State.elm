@@ -12,6 +12,7 @@ module State exposing
     , selectRoot
     , selectType
     , selectTypesList
+    , selectTypesListCurrent
     )
 
 import Model exposing (..)
@@ -19,7 +20,6 @@ import Model exposing (..)
 
 
 ---- EXPOSING ----
--- selectEntityChild : Model -> Maybe EntityList
 
 
 selectEntityChild model entity =
@@ -106,7 +106,7 @@ selectTypesList { marketTypes } id =
         Just types ->
             let
                 selected =
-                    getTypes types id
+                    selectTypes types id
             in
             case selected of
                 [] ->
@@ -184,6 +184,25 @@ isRootGroup { parentGroupID } =
             False
 
 
+selectTypesListCurrent : Model -> Int -> Maybe EntityList
+selectTypesListCurrent { marketTypes } id =
+    case marketTypes of
+        Just types ->
+            let
+                filtred =
+                    List.filter (\{ market_group_id } -> market_group_id == id) types
+            in
+            case filtred of
+                [] ->
+                    Nothing
+
+                x ->
+                    Just <| EntityListTypes x
+
+        Nothing ->
+            Nothing
+
+
 
 ---- INTERNAL ----
 
@@ -235,7 +254,7 @@ childGroups marketGroups parentId =
 selectTypes : MarketTypes -> Int -> MarketTypes
 selectTypes marketTypes marketGroupID =
     List.filter
-        (\{ market_group_id } -> market_group_id == marketGroupID)
+        (\{ group_id } -> group_id == marketGroupID)
         marketTypes
 
 
