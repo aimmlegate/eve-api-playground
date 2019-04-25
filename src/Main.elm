@@ -41,7 +41,7 @@ init marketGroups =
       , currentActive = Nothing
       , prices = Nothing
       }
-    , Task.attempt PriceReceived <| ESI.getPrices
+    , ESI.getPrices
     )
 
 
@@ -61,7 +61,9 @@ update msg model =
         SelectType id ->
             Update.selectType model id
 
-        PriceReceived prices -> Update.priceReceved model prices
+        PriceReceived prices ->
+            Update.priceReceved model prices
+
 
 
 ---- VIEW ----

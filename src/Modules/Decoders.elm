@@ -28,12 +28,14 @@ typeDecoder =
         (field "type_id" Json.int)
 
 
-priceDecoder : Json.Decoder Prices
+priceDecoder : Json.Decoder (List Prices)
 priceDecoder =
-    Json.map3 Prices
-        (field "adjusted_price" Json.int)
-        (field "average_price" Json.int)
-        (field "type_id" Json.int)
+    Json.list
+        (Json.map3 Prices
+            (Json.maybe (field "adjusted_price" Json.float))
+            (Json.maybe (field "average_price" Json.float))
+            (field "type_id" Json.int)
+        )
 
 
 decodeMarketGroups : Value -> MarketGroups
