@@ -3,6 +3,7 @@ module Model exposing
     , EntityList(..)
     , Group
     , MarketGroups
+    , MarketPrices
     , MarketTypes
     , Model
     , Msg(..)
@@ -33,8 +34,8 @@ type alias Type =
 
 
 type alias Prices =
-    { adjusted_price : Int
-    , average_price : Int
+    { adjusted_price : Maybe Float
+    , average_price : Maybe Float
     , type_id : Int
     }
 
@@ -51,6 +52,10 @@ type EntityList
 
 type alias MarketGroups =
     List Group
+
+
+type alias MarketPrices =
+    List Prices
 
 
 type alias MarketTypes =
@@ -72,4 +77,4 @@ type Msg
     = SelectGroup (Maybe Int)
     | TypesReceived (Result Http.Error MarketTypes)
     | SelectType Int
-    | PriceReceived (Result Http.Error (List Prices))
+    | PriceReceived (Result Http.Error MarketPrices)

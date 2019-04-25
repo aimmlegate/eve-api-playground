@@ -1,4 +1,4 @@
-module ESI exposing (getPrices, getTypes)
+module ESI exposing (getPrices, getTypes, getTypesEntity, getTypesId, handleJsonResponse, query)
 
 import Decoders exposing (..)
 import Http

@@ -1,4 +1,4 @@
-module Update exposing (selectGroup, selectType, typesReceived, priceReceved)
+module Update exposing (priceReceved, selectGroup, selectType, typesReceived)
 
 import ESI exposing (..)
 import Http
@@ -101,9 +101,18 @@ selectType model id =
     )
 
 
-priceReceved: Model -> Result Http.Error (List Int) -> ( Model, Cmd Msg )
-priceReceved model prices = 
+priceReceved model prices =
     let
-        _ = Debug.log "prices" prices
+        _ =
+            Debug.log "prices" prices
     in
-    ( model, Cmd.none )
+    case prices of
+        Ok p ->
+            ( { model
+                | prices = Just p
+              }
+            , Cmd.none
+            )
+
+        Err _ ->
+            ( model, Cmd.none )
