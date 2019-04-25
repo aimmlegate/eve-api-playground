@@ -54,6 +54,7 @@ type alias Model =
     , marketTypes : Maybe MarketTypes
     , currentList : Maybe EntityList
     , currentActive : Maybe Entity
+    , selectedType : Maybe Type
     , navigation : Maybe (List Entity)
     }
 

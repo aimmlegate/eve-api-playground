@@ -1,6 +1,7 @@
 module Update exposing (selectGroup, typesReceived)
 
 import ESI exposing (..)
+import Http
 import Model exposing (..)
 import State exposing (..)
 import Task exposing (Task)
@@ -21,7 +22,7 @@ selectGroup model id =
         ( Nothing, _, _ ) ->
             ( { model
                 | currentList = State.selectRoot model
-                , currentActive = Nothing
+                , selectedType = Nothing
                 , navigation = Nothing
               }
             , Cmd.none
@@ -36,7 +37,6 @@ selectGroup model id =
                 Just i ->
                     ( { model
                         | currentList = State.selectGroupsList model i
-                        , currentActive = State.selectGroup model i
                         , navigation = State.buildNavigationList model i
                       }
                     , Cmd.none
@@ -48,7 +48,6 @@ selectGroup model id =
         ( Just i, False, _ ) ->
             ( { model
                 | currentList = State.selectGroupsList model i
-                , currentActive = State.selectGroup model i
                 , navigation = State.buildNavigationList model i
               }
             , Cmd.none
@@ -63,7 +62,6 @@ selectGroup model id =
                 Just types ->
                     ( { model
                         | currentList = selectedTypes
-                        , currentActive = State.selectGroup model i
                         , navigation = State.buildNavigationList model i
                       }
                     , Cmd.none
@@ -79,6 +77,7 @@ selectGroup model id =
                     )
 
 
+typesReceived : Model -> Result Http.Error MarketTypes -> ( Model, Cmd Msg )
 typesReceived model types =
     case types of
         Ok recived ->

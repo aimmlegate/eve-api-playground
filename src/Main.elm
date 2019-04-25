@@ -12,7 +12,7 @@ import Html.Attributes exposing (src)
 import Http
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
-import Renders exposing (currentGroupControl, historyRender, marketGroupsRender, marketTreeRender)
+import Renders exposing (historyRender, marketGroupsRender, marketTreeRender)
 import State exposing (..)
 import Update exposing (..)
 
@@ -34,6 +34,7 @@ init marketGroups =
       , marketTypes = Nothing
       , currentList = Just <| EntityListGroups rootGroups
       , navigation = Nothing
+      , selectedType = Nothing
       , currentActive = Nothing
       }
     , Cmd.none

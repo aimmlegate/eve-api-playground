@@ -1,4 +1,4 @@
-module Renders exposing (currentGroupControl, historyRender, marketGroupsRender, marketTreeRender)
+module Renders exposing (historyRender, marketGroupsRender, marketTreeRender)
 
 import Bootstrap.Breadcrumb as Breadcrumb
 import Bootstrap.Button as Button
@@ -31,7 +31,7 @@ marketGroupRender group =
                 ]
 
 
-marketTypeRender { name } =
+marketTypeRender { name, type_id } =
     li [ class "market-li-types" ]
         [ span
             [ class "font-weight-normal market-li text-muted" ]
@@ -39,33 +39,32 @@ marketTypeRender { name } =
         ]
 
 
-currentGroupControl : Maybe Entity -> Html Msg
-currentGroupControl currentActive =
-    case currentActive of
-        Just entity ->
-            case entity of
-                EntityGroup { marketGroupName, parentGroupID } ->
-                    div []
-                        [ Button.button
-                            [ Button.primary
-                            , Button.attrs
-                                [ onClick <| SelectGroup parentGroupID ]
-                            ]
-                            [ text "Back" ]
-                        , h1 [] [ text marketGroupName ]
-                        ]
 
-                EntityType { name } ->
-                    div []
-                        [ Button.button
-                            [ Button.primary
-                            ]
-                            [ text "Back" ]
-                        , h1 [] [ text name ]
-                        ]
-
-        Nothing ->
-            h1 [] [ text "Root" ]
+-- currentGroupControl : Maybe Entity -> Html Msg
+-- currentGroupControl currentActive =
+--     case currentActive of
+--         Just entity ->
+--             case entity of
+--                 EntityGroup { marketGroupName, parentGroupID } ->
+--                     div []
+--                         [ Button.button
+--                             [ Button.primary
+--                             , Button.attrs
+--                                 [ onClick <| SelectGroup parentGroupID ]
+--                             ]
+--                             [ text "Back" ]
+--                         , h1 [] [ text marketGroupName ]
+--                         ]
+--                 EntityType { name } ->
+--                     div []
+--                         [ Button.button
+--                             [ Button.primary
+--                             ]
+--                             [ text "Back" ]
+--                         , h1 [] [ text name ]
+--                         ]
+--         Nothing ->
+--             h1 [] [ text "Root" ]
 
 
 marketGroupsRender marketGroups =
