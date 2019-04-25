@@ -12,4 +12,4 @@ renderCurrentType { selectedType } =
                 [ p [ class "display-4" ] [ text t.name ], p [] [ text t.description ] ]
 
         Nothing ->
-            div [] []
+            div [ class "jumbotron" ] []

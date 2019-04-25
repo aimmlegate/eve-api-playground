@@ -7,6 +7,7 @@ import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Navbar as Navbar
 import Browser
 import Decoders exposing (..)
+import ESI exposing (..)
 import GroupsRenders exposing (historyRender, marketTreeRender)
 import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
@@ -14,6 +15,7 @@ import Http
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
 import State exposing (..)
+import Task exposing (Task)
 import TypesRenders exposing (renderCurrentType)
 import Update exposing (..)
 
@@ -37,8 +39,9 @@ init marketGroups =
       , navigation = Nothing
       , selectedType = Nothing
       , currentActive = Nothing
+      , prices = Nothing
       }
-    , Cmd.none
+    , Task.attempt PriceReceived <| ESI.getPrices
     )
 
 
@@ -58,6 +61,7 @@ update msg model =
         SelectType id ->
             Update.selectType model id
 
+        PriceReceived prices -> Update.priceReceved model prices
 
 
 ---- VIEW ----

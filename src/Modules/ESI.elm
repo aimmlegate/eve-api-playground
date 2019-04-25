@@ -1,4 +1,4 @@
-module ESI exposing (getTypes)
+module ESI exposing (getPrices, getTypes)
 
 import Decoders exposing (..)
 import Http
@@ -32,6 +32,13 @@ handleJsonResponse decoder response =
 
 query =
     "?datasource=tranquility&language=en-us"
+
+
+getPrices =
+    Http.get
+        { url = "https://esi.evetech.net/latest/markets/prices/" ++ query
+        , expect = Http.expectJson PriceReceived Decoders.priceDecoder
+        }
 
 
 getTypesId groupId =

@@ -1,9 +1,4 @@
-module Decoders exposing
-    ( decodeMarketGroup
-    , decodeMarketGroups
-    , typeDecoder
-    , typeListDecoder
-    )
+module Decoders exposing (decodeMarketGroup, decodeMarketGroups, priceDecoder, typeDecoder, typeListDecoder)
 
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
@@ -30,6 +25,14 @@ typeDecoder =
         (field "name" Json.string)
         (field "market_group_id" Json.int)
         (field "group_id" Json.int)
+        (field "type_id" Json.int)
+
+
+priceDecoder : Json.Decoder Prices
+priceDecoder =
+    Json.map3 Prices
+        (field "adjusted_price" Json.int)
+        (field "average_price" Json.int)
         (field "type_id" Json.int)
 
 

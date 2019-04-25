@@ -6,6 +6,7 @@ module Model exposing
     , MarketTypes
     , Model
     , Msg(..)
+    , Prices
     , Type
     )
 
@@ -27,6 +28,13 @@ type alias Type =
     , name : String
     , market_group_id : Int
     , group_id : Int
+    , type_id : Int
+    }
+
+
+type alias Prices =
+    { adjusted_price : Int
+    , average_price : Int
     , type_id : Int
     }
 
@@ -56,6 +64,7 @@ type alias Model =
     , currentActive : Maybe Entity
     , selectedType : Maybe Type
     , navigation : Maybe (List Entity)
+    , prices : Maybe (List Prices)
     }
 
 
@@ -63,3 +72,4 @@ type Msg
     = SelectGroup (Maybe Int)
     | TypesReceived (Result Http.Error MarketTypes)
     | SelectType Int
+    | PriceReceived (Result Http.Error (List Prices))
