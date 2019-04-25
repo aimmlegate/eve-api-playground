@@ -14,6 +14,7 @@ import Http
 import Json.Decode as Json exposing (..)
 import Model exposing (..)
 import State exposing (..)
+import TypesRenders exposing (renderCurrentType)
 import Update exposing (..)
 
 
@@ -65,7 +66,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        { currentList, currentActive, navigation } =
+        { currentList, currentActive, navigation, selectedType } =
             model
     in
     div []
@@ -78,7 +79,9 @@ view model =
                     ]
                 , Grid.col
                     [ Col.xl10, Col.lg9, Col.md8 ]
-                    [ historyRender navigation ]
+                    [ historyRender navigation
+                    , renderCurrentType model
+                    ]
                 ]
             ]
         ]
