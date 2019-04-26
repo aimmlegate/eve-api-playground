@@ -16,7 +16,7 @@ import Json.Decode as Json exposing (..)
 import Model exposing (..)
 import State exposing (..)
 import Task exposing (Task)
-import TypesRenders exposing (renderCurrentType)
+import TypesRenders exposing (renderCurrentType, renderPrices)
 import Update exposing (..)
 
 
@@ -87,6 +87,7 @@ view model =
                     [ Col.xl10, Col.lg9, Col.md8 ]
                     [ historyRender navigation
                     , renderCurrentType model
+                    , renderPrices model
                     ]
                 ]
             ]
