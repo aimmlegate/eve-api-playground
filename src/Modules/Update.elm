@@ -102,10 +102,6 @@ selectType model id =
 
 
 priceReceved model prices =
-    let
-        _ =
-            Debug.log "prices" prices
-    in
     case prices of
         Ok p ->
             ( { model
