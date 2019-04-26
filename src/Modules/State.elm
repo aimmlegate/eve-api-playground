@@ -3,6 +3,7 @@ module State exposing
     , buildNavigationList
     , getEntityMarketId
     , getEntityMarketParentId
+    , getPrice
     , getRootGroups
     , isRootGroup
     , isTerminalGroup
@@ -22,6 +23,17 @@ import Model exposing (..)
 ---- EXPOSING ----
 
 
+getPrice : Model -> Int -> Maybe Prices
+getPrice { prices } type_id =
+    case prices of
+        Just p ->
+            List.head <| List.filter (\price -> type_id == price.type_id) p
+
+        Nothing ->
+            Nothing
+
+
+selectEntityChild : Model -> Entity -> Maybe EntityList
 selectEntityChild model entity =
     let
         { currentActive, marketGroups } =
